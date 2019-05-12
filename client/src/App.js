@@ -1,12 +1,11 @@
 import React, {Component} from 'react'
-import { BrowserRouter as Router, Route } from "react-router-dom"
+import {Route, Link} from "react-router-dom"
 import {fetchDefaults, SERVER_URL, setMe} from "./utils"
 import NavBar from './NavBar'
 import Lost from './lost'
 import './App.css'
 
-
-class App extends Component {
+class App_ extends Component {
   state = {
     me: {}
   }
@@ -39,16 +38,52 @@ class App extends Component {
     window.location.href = '/'
   }
 
+  renderBreadcrumbs = () => {
+    const loc = this.props.location.pathname
+    if (loc === '/') return null
+    const bread = {
+      '': {
+        name: 'Home',
+        lost: {
+          name: 'Lost Items/Skills',
+        },
+        report: {
+          name: 'Report Player'
+        }
+
+      }
+    }
+    let crumbs = loc.split('/')
+    crumbs.pop()
+    const crumbsJSX = []
+    let currObj = bread, currLink = ''
+    while (true) {
+      const c = crumbs.shift()
+      currObj = currObj[c]
+      if (!currObj) {
+        crumbsJSX.pop()  // remove that last >>
+        break
+      }
+      currLink = currLink + c + '/'
+      crumbsJSX.push(<Link to={currLink}>{currObj.name}</Link>)
+      crumbsJSX.push(<span> » </span>)
+    }
+    return crumbsJSX
+  }
+
   render() {
     return (
-      <Router>
+      <div>
         <NavBar logout={this.logout} me={this.state.me}/>
         <div className="container-fluid" style={{marginTop:10}}>
+          {this.renderBreadcrumbs()}
           <Route path="/lost" component={Lost} />
         </div>
-      </Router>
+      </div>
     );
   }
 }
+
+const App = () => <Route path='/' component={App_} />
 
 export default App;

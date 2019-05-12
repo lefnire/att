@@ -81,5 +81,13 @@ class User(db.Model, Serializer):
             'roles': [r for r in self.roles]
         }
 
+
+class Report(db.Model, Serializer):
+    __tablename__ = 'reports'
+    id = db.Column(db.String(60), primary_key=True, default=genid)
+    plaintiff = db.Column(db.String(60))
+    defendant = db.Column(db.String(60))
+
+
 db.create_all()
 db.session.commit()

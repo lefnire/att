@@ -269,7 +269,6 @@ class LostForm extends Component {
   render() {
     return (
       <div>
-        <Link to={'/lost'}>Back</Link>
         {this.renderAlert()}
         {this.renderForm()}
       </div>

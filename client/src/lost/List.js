@@ -54,7 +54,6 @@ class FormList extends Component {
 
     return (
       <div>
-        <Link to={'/lost'}>Back</Link>
         <Table size="sm" hover>
           <thead>
             <tr color='success'>
