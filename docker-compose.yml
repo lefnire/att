@@ -1,0 +1,19 @@
+version: "3"
+services:
+  server:
+    build: server
+    container_name: lost-server
+    entrypoint: /bin/bash
+    ports:
+      - 5000:5000
+
+    volumes:
+      - ./server/:/server
+  client:
+    build: client
+    container_name: lost-client
+    entrypoint: /bin/bash
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client:/client
