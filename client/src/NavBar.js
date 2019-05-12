@@ -69,9 +69,12 @@ class NavBar2 extends Component {
         <NavbarToggler onClick={this.toggle} />
         <Collapse isOpen={this.state.isOpen} navbar>
           <Nav className="ml-auto" navbar>
-            <NavItem>
+            {/*<NavItem>
               <NavLink href="/lost">Lost Items/Skills</NavLink>
             </NavItem>
+            <NavItem>
+              <NavLink href="/report">Player Reports</NavLink>
+            </NavItem>*/}
             {this.renderProfile()}
           </Nav>
         </Collapse>

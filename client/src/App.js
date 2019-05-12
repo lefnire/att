@@ -3,7 +3,18 @@ import {Route, Link} from "react-router-dom"
 import {fetchDefaults, SERVER_URL, setMe} from "./utils"
 import NavBar from './NavBar'
 import Lost from './lost'
+import Report from './report'
+import CommonIndex from './common/Index'
 import './App.css'
+import {Button} from "reactstrap";
+
+class Index extends CommonIndex {
+  links = [{
+    to: '/lost', name: 'Lost Items/Skills'
+  }, {
+    to: '/report', name: 'Report Player'
+  }]
+}
 
 class App_ extends Component {
   state = {
@@ -77,7 +88,9 @@ class App_ extends Component {
         <NavBar logout={this.logout} me={this.state.me}/>
         <div className="container-fluid" style={{marginTop:10}}>
           {this.renderBreadcrumbs()}
+          <Route path="/" exact component={Index} />
           <Route path="/lost" component={Lost} />
+          <Route path="/report" component={Report} />
         </div>
       </div>
     );

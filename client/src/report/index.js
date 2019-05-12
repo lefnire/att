@@ -8,9 +8,9 @@ import List from './List'
 
 class Index extends CommonIndex {
   links = [{
-    to: '/lost/new', name: 'New Case'
+    to: '/report/new', name: 'New Case'
   }, {
-    to: '/lost/list', name: 'List Cases'
+    to: '/report/list', name: 'List Cases'
   }]
 }
 
