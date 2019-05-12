@@ -82,7 +82,7 @@ def callback():
         db.session.commit()
     # TODO encode more than these?
     # TODO more encode options? see flask-jwt
-    jwt_ = jwt.encode(user.serialize4jwt(), app.config['SECRET_KEY'])
+    jwt_ = jwt.encode(user.serialize4me(), app.config['SECRET_KEY'])
 
     # TODO anything to do with tokens? save in DB/reds? (see https://github.com/mattupstate/flask-jwt)
     # session['oauth2_token'] = token

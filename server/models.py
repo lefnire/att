@@ -19,7 +19,7 @@ class Serializer(object):
 
 class LostForm(db.Model, Serializer):
   __tablename__ = 'lost_forms'
-  id = db.Column(db.String(60), primary_key=True)
+  id = db.Column(db.String(60), primary_key=True, default=genid)
   username = db.Column(db.String(60))
   server = db.Column(ENUM('us', 'eu', 'aus', 'pvp', name='server_enum'))
   timestamp = db.Column(db.DateTime())
@@ -48,12 +48,12 @@ class LostForm(db.Model, Serializer):
 
 class User(db.Model, Serializer):
     __tablename__ = 'users'
-    id = db.Column(db.String(60), primary_key=True, default_value=genid)
+    id = db.Column(db.String(60), primary_key=True, default=genid)
     discord_id = db.Column(db.String(60))
     discord_username = db.Column(db.String(60))
     discord_avatar = db.Column(db.String(60))
     email = db.Column(db.String(60))
-    roles = ARRAY(db.Column(ENUM('admin', 'bug-reporter', name='roles_enum')))
+    roles = db.Column(ARRAY(db.String(60)))  # TODO set defaults on fields, esp. this one
 
     def __init__(self, discord_json, roles=[]):
         self.id = genid()
@@ -61,9 +61,25 @@ class User(db.Model, Serializer):
         self.discord_username = discord_json['username'] + '#' + discord_json['discriminator']
         self.discord_avatar = discord_json['avatar']
         self.email = discord_json['email']
+        self.roles = roles
 
-    def serialize4jwt(self):
-        return {'id': self.id, 'discord_id': self.discord_id}
+    def serialize4me(self):
+        return {
+            'id': self.id,
+            'discord_id': self.discord_id,
+            'discord_username': self.discord_username,
+            'discord_avatar': self.discord_avatar,
+            'email': self.email,
+            'roles': [r for r in self.roles]
+        }
+
+    def serialize4others(self):
+        return {
+            'id': self.id,
+            'discord_username': self.discord_username,
+            'discord_avatar': self.discord_avatar,
+            'roles': [r for r in self.roles]
+        }
 
 db.create_all()
 db.session.commit()
