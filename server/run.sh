@@ -1,2 +1,2 @@
 #!/bin/bash
-FLASK_APP=app.py flask run -h 0.0.0.0
+FLASK_APP=server.py flask run -h 0.0.0.0

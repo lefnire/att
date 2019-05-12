@@ -13,30 +13,30 @@ class App extends Component {
 
   componentDidMount() {
     this.handleLogin()
-    this.fetchMe()
   }
 
   handleLogin = () => {
     // this called when user clicks through Discord oauth flow, redirects here with ?jwt=..
     const urlParams = new URLSearchParams(window.location.search)
     const jwt = urlParams.get('jwt')
-    if (!jwt) return
-    localStorage.setItem('jwt', jwt)
-    window.location.href = '/'  // get the ?jwt query outa URL
+    if (jwt) {
+      localStorage.setItem('jwt', jwt)
+      window.location.href = '/'  // get the ?jwt query outa URL
+      return
+    }
+    setTimeout(() => {
+      fetch(SERVER_URL + '/me', fetchDefaults())
+        .then(r => r.json()).then(me => {
+          setMe(me)
+          this.setState({me})
+      })
+    }, 100)
   }
 
   logout = () => {
     localStorage.clear()
     sessionStorage.clear()
     window.location.href = '/'
-  }
-
-  fetchMe = () => {
-    fetch(SERVER_URL + '/me', fetchDefaults())
-      .then(r => r.json()).then(me => {
-        setMe(me)
-        this.setState({me})
-    })
   }
 
   render() {
