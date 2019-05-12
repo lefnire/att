@@ -1,8 +1,11 @@
 import uuid, datetime, pdb
-from app import DB
-from sqlalchemy.dialects.postgresql import ENUM, JSONB
+from app import db
+from sqlalchemy.dialects.postgresql import ENUM, JSONB, ARRAY
 from sqlalchemy.inspection import inspect
 from sqlalchemy import text
+
+
+def genid(): return str(uuid.uuid4())
 
 
 class Serializer(object):
@@ -14,21 +17,21 @@ class Serializer(object):
     return [m.serialize() for m in l]
 
 
-class LostForm(DB.Model, Serializer):
+class LostForm(db.Model, Serializer):
   __tablename__ = 'lost_forms'
-  id = DB.Column(DB.String(60), primary_key=True)
-  username = DB.Column(DB.String(60))
-  server = DB.Column(ENUM('us', 'eu', 'aus', 'pvp', name='server_enum'))
-  timestamp = DB.Column(DB.DateTime())
-  items = DB.Column(JSONB)
-  skills = DB.Column(JSONB)
-  notes = DB.Column(DB.Text())
+  id = db.Column(db.String(60), primary_key=True)
+  username = db.Column(db.String(60))
+  server = db.Column(ENUM('us', 'eu', 'aus', 'pvp', name='server_enum'))
+  timestamp = db.Column(db.DateTime())
+  items = db.Column(JSONB)
+  skills = db.Column(JSONB)
+  notes = db.Column(db.Text())
 
-  userid = DB.Column(DB.String(60))
-  status = DB.Column(ENUM('pending', 'wip', 'rejected', 'complete', name='status_enum'))
+  userid = db.Column(db.String(60))
+  status = db.Column(ENUM('pending', 'wip', 'rejected', 'complete', name='status_enum'))
 
   def __init__(self, username=None, server=None, timestamp=None, items=[], skills=[], notes='', userid=None, status='pending'):
-    self.id = str(uuid.uuid4())
+    self.id = genid()
     self.username = username
     self.server = server
     self.timestamp = datetime.datetime.utcnow() if not timestamp else timestamp
@@ -42,5 +45,25 @@ class LostForm(DB.Model, Serializer):
       found = LostForm.query.filter_by(username=username).filter(userid != None).first()
       if found: self.userid = found.userid
 
-DB.create_all()
-DB.session.commit()
+
+class User(db.Model, Serializer):
+    __tablename__ = 'users'
+    id = db.Column(db.String(60), primary_key=True, default_value=genid)
+    discord_id = db.Column(db.String(60))
+    discord_username = db.Column(db.String(60))
+    discord_avatar = db.Column(db.String(60))
+    email = db.Column(db.String(60))
+    roles = ARRAY(db.Column(ENUM('admin', 'bug-reporter', name='roles_enum')))
+
+    def __init__(self, discord_json, roles=[]):
+        self.id = genid()
+        self.discord_id = discord_json['id']
+        self.discord_username = discord_json['username'] + '#' + discord_json['discriminator']
+        self.discord_avatar = discord_json['avatar']
+        self.email = discord_json['email']
+
+    def serialize4jwt(self):
+        return {'id': self.id, 'discord_id': self.discord_id}
+
+db.create_all()
+db.session.commit()

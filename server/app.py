@@ -4,25 +4,30 @@ from flask_cors import CORS
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
-APP = Flask(__name__)
-CORS(APP)
-APP.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# URL = {'server': 'http://???:5000', 'client': 'http://lost.ocdevel.com'}
+URL = {'server': 'http://localhost:5000', 'client': 'http://localhost:3000'}
 
-APP.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/%s' % (
+app = Flask(__name__)
+app.debug = True
+CORS(app)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/%s' % (
   # ARGS.dbuser, ARGS.dbpass, ARGS.dbhost, ARGS.dbname
   os.environ['DBUSER'], os.environ['DBPASS'], os.environ['DBHOST'], os.environ['DBNAME']
 )
 
 # initialize the database connection
-DB = SQLAlchemy(APP)
+db = SQLAlchemy(app)
 
 # initialize database migration management
 # MIGRATE = Migrate(APP, DB)
 
-from models import *
+from models import LostForm
+import discordauth
 
 
-@APP.route('/lost', methods=['GET', 'POST'])
+@app.route('/lost', methods=['GET', 'POST'])
 def lost_list():
   if request.method == 'GET':
     lost = LostForm.query.all()
@@ -31,12 +36,12 @@ def lost_list():
   if request.method == 'POST':
     data = request.get_json()
     form = LostForm(**data)
-    DB.session.add(form)
-    DB.session.commit()
+    db.session.add(form)
+    db.session.commit()
     return jsonify(form.serialize())
 
 
-@APP.route('/lost/<id>', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/lost/<id>', methods=['GET', 'PUT', 'DELETE'])
 def lost_item(id):
   lost = LostForm.query.get(id)
   if request.method == 'GET':
@@ -46,10 +51,10 @@ def lost_item(id):
     data = request.get_json()
     for k, v in data.items():
       setattr(lost, k, v)
-    DB.session.commit()
+    db.session.commit()
     return jsonify(lost.serialize())
 
   if request.method == 'DELETE':
-    DB.session.delete(lost)
-    DB.session.commit()
+    db.session.delete(lost)
+    db.session.commit()
     return jsonify({'status': 'ok'})

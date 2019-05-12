@@ -6,8 +6,8 @@ import {itemsObj, itemsArr} from './items'
 import _ from 'lodash'
 import './App.css'
 
-//const URL = 'http://localhost:5000'
-const URL = 'http://35.236.47.41:5000'
+const URL = 'http://localhost:5000'
+//const URL = 'http://35.236.47.41:5000'
 
 const fetchDefaults = {
    headers: {
@@ -348,6 +348,7 @@ class App extends Component {
   render() {
     return (
       <div className="container">
+        <a href='http://localhost:5000/discord'>Discord</a>
         <Router>
           <Route path="/" exact component={LostForm} />
           <Route path="/b5402542-f3a8-464b-acdc-50f72fbd30c8" exact component={LostList} />
