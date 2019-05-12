@@ -113,6 +113,7 @@ class LostForm extends Component {
           <Input
             type="text"
             name="username"
+            required
             onChange={this.changeInput('username')}
             value={username}
           />
