@@ -91,13 +91,20 @@ class LostForm extends Component {
     const { server, skills, items, username, userid } = this.state
     const skills_ = !skills.length ? null :
       skills.map(s => `$> player progression pathlevelup ${username} ${s[0]}  # ${s[1]}x`).join('\n')
-    const items_ = !items.length ? null :
-      items.map(s => `$> trade post ${userid ? userid : '<userid>'} ${s[0]} ${s[1]}`).join('\n')
+    let items_ = null
+    if (items.length) {
+      items_ = userid ?
+        items.map(s => `$> trade post ${userid ? userid : '<userid>'} ${s[0]} ${s[1]}`).join('\n')
+        : `$> player id ${username}  # then copy/paste ID into "User ID" above to see item commands`
+      items_ += `\n\n`
+
+    }
+
     return <div>
       <Label>Commands</Label>
       <pre><code>
-        Log into {server} server{'\n'}
-        {items_}{'\n'}
+        Log into {server} server{'\n\n'}
+        {items_}
         {skills_}
       </code></pre>
     </div>

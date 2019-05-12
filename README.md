@@ -2,7 +2,7 @@
 - Client on Docker, see [create-react-app](https://github.com/facebook/create-react-app)
 
 ```
-docker up -d
+docker-compose up -d
 docker ps
 docker exec -it <server container id> /bin/bash
 - ./run.sh
