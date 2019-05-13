@@ -1,15 +1,10 @@
-import React, {Component} from 'react'
+import React from 'react'
 import update from 'react-addons-update'
 import {Alert, Card, CardTitle, CardText, Col, Button, Form, FormGroup, Label, Input} from 'reactstrap'
-import {Link} from 'react-router-dom'
+import CommonForm from '../common/Form'
 import {itemsArr} from './items'
-import _ from 'lodash'
 
-import {fetchDefaults, SERVER_URL} from '../utils'
-
-
-class LostForm extends Component {
-  editing = false
+class LostForm extends CommonForm {
   state = {
     username: '',
     server: 'us',
@@ -22,15 +17,16 @@ class LostForm extends Component {
     submitting: false
   }
 
+  alerts = {
+    editing: <p>Form submitted. Copy this page's URL and private-message it to @lefnire in Discord. When he has time, he'll approve the form and send the items to your in-game mailbox (near Townhall).</p>,
+    creating: <div>
+      <p>Server issues can cause players to lose items, and rarely skills. Before reporting lost items, <em>triple</em> check you're on the correct server. There's a server-selection bug that sends players <em>not</em> where they selected. Signs: you're at character creation, have different items than usual, etc. If you're on the correct server, fill out this form.</p>
+      <p>No need to login via Discord</p>
+    </div>
+  }
+
   componentDidMount() {
-    const id = _.get(this.props, 'match.params.id')
-    if (id) {
-      this.editing = id
-      fetch(`${SERVER_URL}/lost/` + id, fetchDefaults())
-      .then(r => r.json()).then(res => {
-        this.setState(res)
-      })
-    }
+    this.loadIfForm('lost')
   }
 
   incr = (k, dir) => () => {
@@ -47,19 +43,7 @@ class LostForm extends Component {
     const { username, server, skills, items, notes, userid, status } = this.state
     const data = { username, server, skills, items, notes, userid, status }
 
-    const fetchURL = this.editing ? 'lost/' + this.editing : 'lost'
-    const method = this.editing ? 'PUT' : 'POST'
-
-    this.setState({submitting: true})
-    fetch(`${SERVER_URL}/${fetchURL}`, {
-      method,
-      body: JSON.stringify(data),
-      ...fetchDefaults()
-    })
-    .then(r => r.json()).then(res => {
-      window.location = '/form/' + res.id
-    })
-    return false
+    return this.submitForm('lost', data)
   }
 
   renderIncrBtns = k => (
@@ -68,16 +52,6 @@ class LostForm extends Component {
       <Button onClick={this.incr(k, 1)}>+</Button>
     </div>
   )
-
-  changeInput = (k, idxs=null) => e => {
-    const val = e.target.value
-    if (idxs === null) {
-      return this.setState({[k]: val})
-    }
-    this.setState(update(this.state, {
-      [k]: {[idxs[0]]: {[idxs[1]]: {$set: val}}}
-    }))
-  }
 
   renderCommands = () => {
     const { server, skills, items, username, userid } = this.state
@@ -89,7 +63,6 @@ class LostForm extends Component {
         items.map(s => `$> trade post ${userid ? userid : '<userid>'} ${s[0]} ${s[1]}`).join('\n')
         : `$> player id ${username}  # then copy/paste ID into "User ID" above to see item commands`
       items_ += `\n\n`
-
     }
 
     return <div>
@@ -250,28 +223,6 @@ class LostForm extends Component {
           {this.editing ? 'Save' : 'Submit'}
         </Button>
       </Form>
-    )
-  }
-
-  renderAlert = () => {
-    if (!this.editing) {
-      return <Alert color='secondary'>
-        <p>Server issues can cause players to lose items, and rarely skills. Before reporting lost items, <em>triple</em> check you're on the correct server. There's a server-selection bug that sends players <em>not</em> where they selected. Signs: you're at character creation, have different items than usual, etc. If you're on the correct server, fill out this form.</p>
-        <p>No need to login via Discord</p>
-      </Alert>
-
-    }
-    return <Alert color="info">
-      Form submitted. Copy this page's URL and private-message it to @lefnire in Discord. When he has time, he'll approve the form and send the items to your in-game mailbox (near Townhall).
-    </Alert>
-  }
-
-  render() {
-    return (
-      <div>
-        {this.renderAlert()}
-        {this.renderForm()}
-      </div>
     )
   }
 }

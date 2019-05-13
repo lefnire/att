@@ -1,7 +1,7 @@
 import os, pdb, jwt
 from flask import request, jsonify, session, redirect
 from app import app, db
-from models import LostForm, User
+from models import LostForm, User, Report
 
 # URL = {'server': 'http://???:5000', 'client': 'http://lost.ocdevel.com'}
 URL = {'server': 'http://localhost:5000', 'client': 'http://localhost:3000'}
@@ -10,37 +10,40 @@ URL = {'server': 'http://localhost:5000', 'client': 'http://localhost:3000'}
 Main Routes
 """
 
-@app.route('/lost', methods=['GET', 'POST'])
-def lost_list():
-  if request.method == 'GET':
-    lost = LostForm.query.all()
-    return jsonify(LostForm.serialize_list(lost))
 
-  if request.method == 'POST':
-    data = request.get_json()
-    form = LostForm(**data)
-    db.session.add(form)
-    db.session.commit()
-    return jsonify(form.serialize())
+@app.route('/case/<model>', methods=['GET', 'POST'])
+def case_list(model):
+    Model = LostForm if model == 'lost' else Report
+    if request.method == 'GET':
+        res = Model.query.all()
+        return jsonify(Model.serialize_list(res))
+
+    if request.method == 'POST':
+        data = request.get_json()
+        res = Model(**data)
+        db.session.add(res)
+        db.session.commit()
+        return jsonify(res.serialize())
 
 
-@app.route('/lost/<id>', methods=['GET', 'PUT', 'DELETE'])
-def lost_item(id):
-  lost = LostForm.query.get(id)
-  if request.method == 'GET':
-    return jsonify(lost.serialize())
+@app.route('/case/<model>/<id>', methods=['GET', 'PUT', 'DELETE'])
+def lost_item(model, id):
+    Model = LostForm if model == 'lost' else Report
+    res = Model.query.get(id)
+    if request.method == 'GET':
+        return jsonify(res.serialize())
 
-  if request.method == 'PUT':
-    data = request.get_json()
-    for k, v in data.items():
-      setattr(lost, k, v)
-    db.session.commit()
-    return jsonify(lost.serialize())
+    if request.method == 'PUT':
+        data = request.get_json()
+        for k, v in data.items():
+            setattr(res, k, v)
+        db.session.commit()
+        return jsonify(res.serialize())
 
-  if request.method == 'DELETE':
-    db.session.delete(lost)
-    db.session.commit()
-    return jsonify({'status': 'ok'})
+    if request.method == 'DELETE':
+        db.session.delete(res)
+        db.session.commit()
+        return jsonify({'status': 'ok'})
 
 
 @app.route('/me', methods=['GET'])
@@ -71,7 +74,6 @@ OAUTH2_REDIRECT_URI = URL['server'] + '/discord/callback'
 API_BASE_URL = os.environ.get('API_BASE_URL', 'https://discordapp.com/api')
 AUTHORIZATION_BASE_URL = API_BASE_URL + '/oauth2/authorize'
 TOKEN_URL = API_BASE_URL + '/oauth2/token'
-
 
 if 'http://' in OAUTH2_REDIRECT_URI:
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = 'true'

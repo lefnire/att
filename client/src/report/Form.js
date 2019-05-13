@@ -1,12 +1,9 @@
-import React, {Component} from 'react'
+import React from 'react'
 import CommonForm from '../common/Form'
 import {Alert, Card, CardTitle, CardText, Col, Button, Form, FormGroup, Label, Input} from 'reactstrap'
 
-import {fetchDefaults, SERVER_URL} from '../utils'
-
 
 class ReportForm extends CommonForm {
-  editing = false
   state = {
     plaintiff: '',
     defendant: '',
@@ -15,6 +12,14 @@ class ReportForm extends CommonForm {
     status: 'pending',
 
     submitting: false
+  }
+
+  alerts = {
+    editing: <p>Form submitted. Copy this page's URL and private-message it to @kazun#0001 (aka Sol) in Discord. When he has time, he'll investigate and respond to you.</p>,
+    creating: <div>
+      <p>Did someone PK you off PvP server? Did someone steal your stuff? Report it here.</p>
+      <p>No need to login via Discord above.</p>
+    </div>
   }
 
   componentDidMount() {
@@ -26,23 +31,11 @@ class ReportForm extends CommonForm {
     const { plaintiff, defendant, server, notes, status } = this.state
     const data = { plaintiff, defendant, server, notes, status }
 
-    const fetchURL = this.editing ? 'report/' + this.editing : 'report'
-    const method = this.editing ? 'PUT' : 'POST'
-
-    this.setState({submitting: true})
-    fetch(`${SERVER_URL}/${fetchURL}`, {
-      method,
-      body: JSON.stringify(data),
-      ...fetchDefaults()
-    })
-    .then(r => r.json()).then(res => {
-      window.location = '/report/' + res.id
-    })
-    return false
+    return this.submitForm('report', data)
   }
 
   renderForm = () => {
-    const { username, server, skills, items, notes, userid, status, submitting } = this.state
+    const { plaintiff, defendant, server, notes, status, submitting } = this.state
     return (
       <Form onSubmit={this.submit}>
         <FormGroup>
@@ -52,7 +45,7 @@ class ReportForm extends CommonForm {
             name="plaintiff"
             required
             onChange={this.changeInput('plaintiff')}
-            value={username}
+            value={plaintiff}
           />
           <small>Your ATT username, not your Discord username (they're often different)</small>
         </FormGroup>
@@ -63,7 +56,7 @@ class ReportForm extends CommonForm {
             type="text"
             name="defendant"
             onChange={this.changeInput('defendant')}
-            value={username}
+            value={defendant}
           />
           <small>ATT username of the transgressor, if you know it. If not (and it's a PK), no worries - we can look up PKs in the logs.</small>
         </FormGroup>
@@ -114,8 +107,6 @@ class ReportForm extends CommonForm {
               </Input>
             </FormGroup>
           </CardText>
-
-          {this.renderCommands()}
         </Card>
         )}
 
@@ -127,27 +118,6 @@ class ReportForm extends CommonForm {
           {this.editing ? 'Save' : 'Submit'}
         </Button>
       </Form>
-    )
-  }
-
-  renderAlert = () => {
-    if (!this.editing) {
-      return <Alert color='secondary'>
-        <p>Did someone PK you off PvP server? Did someone steal your stuff? Report it here.</p>
-      </Alert>
-
-    }
-    return <Alert color="info">
-      Form submitted. Copy this page's URL and private-message it to @kazun#0001 (aka Sol) in Discord. When he has time, he'll investigate and respond to you.
-    </Alert>
-  }
-
-  render() {
-    return (
-      <div>
-        {this.renderAlert()}
-        {this.renderForm()}
-      </div>
     )
   }
 }

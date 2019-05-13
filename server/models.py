@@ -17,18 +17,22 @@ class Serializer(object):
     return [m.serialize() for m in l]
 
 
+server_enum = ENUM('us', 'eu', 'aus', 'pvp', name='server_enum')
+status_enum = ENUM('pending', 'wip', 'rejected', 'complete', name='status_enum')
+
+
 class LostForm(db.Model, Serializer):
   __tablename__ = 'lost_forms'
   id = db.Column(db.String(60), primary_key=True, default=genid)
   username = db.Column(db.String(60))
-  server = db.Column(ENUM('us', 'eu', 'aus', 'pvp', name='server_enum'))
-  timestamp = db.Column(db.DateTime())
+  server = db.Column(server_enum)
+  timestamp = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
   items = db.Column(JSONB)
   skills = db.Column(JSONB)
   notes = db.Column(db.Text())
 
   userid = db.Column(db.String(60))
-  status = db.Column(ENUM('pending', 'wip', 'rejected', 'complete', name='status_enum'))
+  status = db.Column(status_enum, default='pending')
 
   def __init__(self, username=None, server=None, timestamp=None, items=[], skills=[], notes='', userid=None, status='pending'):
     self.id = genid()
@@ -87,6 +91,10 @@ class Report(db.Model, Serializer):
     id = db.Column(db.String(60), primary_key=True, default=genid)
     plaintiff = db.Column(db.String(60))
     defendant = db.Column(db.String(60))
+    timestamp = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
+    notes = db.Column(db.Text())
+    server = db.Column(server_enum)
+    status = db.Column(status_enum, default='pending')
 
 
 db.create_all()

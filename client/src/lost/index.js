@@ -22,7 +22,7 @@ class Lost extends Component {
         <Route path={match.path} exact component={Index} />
         <Route path={match.path + '/new'} component={Form} />
         <Route path={match.path + '/list'} component={List} />
-        <Route path={match.path + '/form/:id'} component={Form} />
+        <Route path={match.path + '/case/:id'} component={Form} />
       </div>
     );
   }
