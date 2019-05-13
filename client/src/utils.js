@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
-const SERVER_URL = 'http://localhost:5000'
-//const SERVER_URL = 'http://35.236.47.41:5000'
+// const SERVER_URL = 'http://localhost:5000'
+const SERVER_URL = 'http://35.211.255.66:5000'
 
 const fetchDefaults = () => {
   const headers = {
