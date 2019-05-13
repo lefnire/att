@@ -39,7 +39,7 @@ class CommonForm extends Component {
       ...fetchDefaults()
     })
     .then(r => r.json()).then(res => {
-      window.location = `/case/${model}/${res.id}`
+      window.location = `/${model}/case/${res.id}`
     })
     return false
   }

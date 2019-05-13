@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
-import {Badge, Table} from 'reactstrap'
 import {Link} from 'react-router-dom'
+import ReactTable from 'react-table'
 import {fetchDefaults, SERVER_URL, getMe, isAdmin} from '../utils'
 
 
@@ -16,14 +16,21 @@ class CommonList extends Component {
     })
   }
 
-  goto = row => () => {
-    window.location = `/${this.model}/case/${row.id}`
-  }
-
-  renderRow = row => {
-    return <tr onClick={this.goto(row)}>
-      {this.table.map(col => <td>{col.render ? col.render(row[col.k]) : row[col.k]}</td>)}
-    </tr>
+  getTdProps = (state, rowInfo, column, instance) => {
+    return {
+      onClick: (e, handleOriginal) => {
+        const {id} = rowInfo.row._original
+        window.location = `/${this.model}/case/${id}`
+        // IMPORTANT! React-Table uses onClick internally to trigger
+        // events like expanding SubComponents and pivots.
+        // By default a custom 'onClick' handler will override this functionality.
+        // If you want to fire the original onClick handler, call the
+        // 'handleOriginal' function.
+        // if (handleOriginal) {
+        //   handleOriginal()
+        // }
+      }
+    }
   }
 
   render() {
@@ -36,14 +43,12 @@ class CommonList extends Component {
 
     return (
       <div>
-        <Table size="sm" hover>
-          <thead>
-            <tr color='success'>
-              {this.table.map(col => <th>{col.v}</th>)}
-            </tr>
-          </thead>
-          <tbody>{this.state.list.map(this.renderRow)}</tbody>
-        </Table>
+        <ReactTable
+          filterable={true}
+          data={this.state.list}
+          columns={this.columns}
+          getTdProps={this.getTdProps}
+        />
       </div>
     )
   }

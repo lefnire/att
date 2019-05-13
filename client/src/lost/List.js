@@ -1,33 +1,31 @@
-import React, {Component} from 'react'
-import {Badge, Table} from 'reactstrap'
+import React from 'react'
+import {Badge} from 'reactstrap'
 import {itemsObj} from './items'
-import {Link} from 'react-router-dom'
-import {fetchDefaults, SERVER_URL, getMe, isAdmin} from '../utils'
 import CommonList from '../common/List'
 
 
 class List extends CommonList {
   model = 'lost'
 
-  table = [
-    {k: 'timestamp', v: 'Date'},
-    {k: 'username', v: 'User'},
-    {k: 'server', v: 'Server'},
-    {k: 'items', v: 'Items', render: (items) => {
-      return items.map(i => itemsObj[i[0]]).join(', ')
+  columns = [
+    {accessor: 'timestamp', Header: 'Date'},
+    {accessor: 'username', Header: 'User'},
+    {accessor: 'server', Header: 'Server'},
+    {accessor: 'items', Header: 'Items', Cell: ({value}) => {
+      return value.map(i => itemsObj[i[0]]).join(', ')
     }},
-    {k: 'skills', v: 'Skills', render: (skills) => {
-      return skills.map(i => i[0]).join(', ')
+    {accessor: 'skills', Header: 'Skills', Cell: ({value}) => {
+      return value.map(i => i[0]).join(', ')
     }},
-    {k: 'notes', v: 'Notes'},
-    {k: 'status', v: 'Status', render: (status) => {
+    {accessor: 'notes', Header: 'Notes'},
+    {accessor: 'status', Header: 'Status', Cell: ({value}) => {
       const badgeColor = {
         'pending': 'warning',
         'wip': 'success',
         'complete': 'success',
         'rejected': 'danger'
-      }[status]
-      return <Badge color={badgeColor}>{status}</Badge>
+      }[value]
+      return <Badge color={badgeColor}>{value}</Badge>
     }}
   ]
 }

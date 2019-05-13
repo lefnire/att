@@ -1,25 +1,25 @@
 import React from 'react'
-import {Badge, Table} from 'reactstrap'
+import {Badge} from 'reactstrap'
 import CommonList from '../common/List'
 
 
 class List extends CommonList {
   model = 'report'
 
-  table = [
-    {k: 'timestamp', v: 'Date'},
-    {k: 'plaintiff', v: 'Plaintiff'},
-    {k: 'defendant', v: 'Defendant'},
-    {k: 'server', v: 'Server'},
-    {k: 'notes', v: 'Notes'},
-    {k: 'status', v: 'Status', render: (status) => {
+  columns = [
+    {accessor: 'timestamp', Header: 'Date'},
+    {accessor: 'plaintiff', Header: 'Plaintiff'},
+    {accessor: 'defendant', Header: 'Defendant'},
+    {accessor: 'server', Header: 'Server'},
+    {accessor: 'notes', Header: 'Notes'},
+    {accessor: 'status', Header: 'Status', Cell: ({value}) => {
       const badgeColor = {
         'pending': 'warning',
         'wip': 'success',
         'complete': 'success',
         'rejected': 'danger'
-      }[status]
-      return <Badge color={badgeColor}>{status}</Badge>
+      }[value]
+      return <Badge color={badgeColor}>{value}</Badge>
     }}
   ]
 }
