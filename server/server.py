@@ -11,6 +11,20 @@ Main Routes
 """
 
 
+def me(request):
+    jwt_ = request.headers.get('Authorization')
+    if not jwt_: return {}
+    jwt_ = jwt_[4:]  # remote 'JWT ' at beginning
+    user = jwt.decode(jwt_, app.config['SECRET_KEY'])
+    return User.query.get(user['id'])
+
+
+@app.route('/me', methods=['GET'])
+def me_route():
+    user = me(request)
+    return jsonify(user.serialize4me() if user else {})
+
+
 @app.route('/case/<model>', methods=['GET', 'POST'])
 def case_list(model):
     Model = LostForm if model == 'lost' else Report
@@ -33,6 +47,10 @@ def lost_item(model, id):
     if request.method == 'GET':
         return jsonify(res.serialize())
 
+    user = me(request)
+    if res.status != 'pending' and not (user and 'admin' in user.roles):
+        return 'Only admins can change forms after status != pending', 401
+
     if request.method == 'PUT':
         data = request.get_json()
         for k, v in data.items():
@@ -44,17 +62,6 @@ def lost_item(model, id):
         db.session.delete(res)
         db.session.commit()
         return jsonify({'status': 'ok'})
-
-
-@app.route('/me', methods=['GET'])
-def me():
-    jwt_ = request.headers.get('Authorization')
-    if not jwt_: return jsonify({})
-    jwt_ = jwt_[4:]  # remote 'JWT ' at beginning
-    user = jwt.decode(jwt_, app.config['SECRET_KEY'])
-    user = User.query.get(user['id'])
-    json_ = jsonify(user.serialize4me())
-    return json_
 
 
 """
