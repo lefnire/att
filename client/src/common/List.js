@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Link} from 'react-router-dom'
+import moment from 'moment';
 import ReactTable from 'react-table'
 import {fetchDefaults, SERVER_URL, getMe, isAdmin} from '../utils'
 
@@ -9,9 +9,16 @@ class CommonList extends Component {
     list: []
   }
 
+  filterCaseInsensitive = ({ id, value }, row) => row[id] ? row[id].toLowerCase().includes(value.toLowerCase()) : true
+
   componentDidMount() {
     fetch(`${SERVER_URL}/case/${this.model}`, fetchDefaults())
     .then(r => r.json()).then(list => {
+
+      list.forEach(i => {
+        i.timestamp = moment.utc(i.timestamp).format('YYYY-MM-DD')
+      });
+
       this.setState({list})
     })
   }
@@ -20,7 +27,8 @@ class CommonList extends Component {
     return {
       onClick: (e, handleOriginal) => {
         const {id} = rowInfo.row._original
-        window.location = `/${this.model}/case/${id}`
+        const win = window.open(`/${this.model}/case/${id}`, '_blank');
+        win.focus();
         // IMPORTANT! React-Table uses onClick internally to trigger
         // events like expanding SubComponents and pivots.
         // By default a custom 'onClick' handler will override this functionality.
@@ -44,7 +52,16 @@ class CommonList extends Component {
     return (
       <div>
         <ReactTable
+          defaultSorted={[
+            {id: 'timestamp', desc: true}
+          ]}
           filterable={true}
+          defaultFilterMethod={this.filterCaseInsensitive}
+          defaultFiltered={[
+            {id: 'status', value: 'pending'}
+          ]}
+
+          defaultPageSize={50}
           data={this.state.list}
           columns={this.columns}
           getTdProps={this.getTdProps}

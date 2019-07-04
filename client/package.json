@@ -11,7 +11,8 @@
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
     "react-table": "^6.10.0",
-    "reactstrap": "^8.0.0"
+    "reactstrap": "^8.0.0",
+    "moment": "*"
   },
   "scripts": {
     "start": "react-scripts start",

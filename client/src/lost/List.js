@@ -1,6 +1,6 @@
 import React from 'react'
 import {Badge} from 'reactstrap'
-import {itemsObj} from './items'
+import {itemsObj, itemsObjArchive} from './items'
 import CommonList from '../common/List'
 
 
@@ -12,7 +12,10 @@ class List extends CommonList {
     {accessor: 'username', Header: 'User'},
     {accessor: 'server', Header: 'Server'},
     {accessor: 'items', Header: 'Items', Cell: ({value}) => {
-      return value.map(i => itemsObj[i[0]]).join(', ')
+      return value.map(i => {
+        const obj = itemsObj[i[0]] || itemsObjArchive[i[0]];
+        return obj.name;
+      }).join(', ')
     }},
     {accessor: 'skills', Header: 'Skills', Cell: ({value}) => {
       return value.map(i => i[0]).join(', ')

@@ -1,8 +1,9 @@
 import React from 'react'
+import _ from 'lodash';
 import update from 'react-addons-update'
 import {Alert, Card, CardTitle, CardText, Col, Button, Form, FormGroup, Label, Input} from 'reactstrap'
 import CommonForm from '../common/Form'
-import {itemsArr} from './items'
+import {itemsArr, itemsObj, itemsObjArchive} from './items'
 
 class LostForm extends CommonForm {
   state = {
@@ -19,10 +20,12 @@ class LostForm extends CommonForm {
 
   alerts = {
     editing: <p>Form submitted. Copy this page's URL and private-message it to @lefnire in Discord. When he has time, he'll approve the form and send the items to your in-game mailbox (near Townhall).</p>,
-    creating: <div>
-      <p>Server issues can cause players to lose items, and rarely skills. Before reporting lost items, <em>triple</em> check you're on the correct server. There's a server-selection bug that sends players <em>not</em> where they selected. Signs: you're at character creation, have different items than usual, etc. If you're on the correct server, fill out this form.</p>
-      <p>No need to login via Discord</p>
-    </div>
+    creating: <ul>
+      <li>No need to login via Discord</li>
+      <li>We only refund items due to server crashes/glitches. Not theft, deaths, etc.</li>
+      <li>If you put your bag down and it disappeared, please look around the area thoroughly. There's an issue with backpack physics: they can easily fling away so fast it looks like they disappeared. This is especially true when taking long objects out of your bag (long handles/weapons, etc).</li>
+      <li>It's at our digression whether/what to refund. We can reject forms without reason.</li>
+    </ul>
   }
 
   componentDidMount() {
@@ -54,15 +57,32 @@ class LostForm extends CommonForm {
   )
 
   renderCommands = () => {
-    const { server, skills, items, username, userid } = this.state
-    const skills_ = !skills.length ? null :
-      skills.map(s => `$> player progression pathlevelup ${username} ${s[0]}  # ${s[1]}x`).join('\n')
-    let items_ = null
+    const { server, skills, items, userid } = this.state
+    let { username } = this.state;
+    if (~username.indexOf(' ')) { username = `"${username}"`}
+
+    // Skills
+    let skills_ = skills.length ? '' : null;
+    if (skills.length) {
+      skills.forEach(s => {
+        const repeat = s[1];
+        _.times(repeat, () => skills_ += `player progression pathlevelup ${username} ${s[0]}\n`);
+      })
+    }
+
+    // Items
+    let items_ = items.length ? '' : null;
     if (items.length) {
-      items_ = userid ?
-        items.map(s => `$> trade post ${userid ? userid : '<userid>'} ${s[0]} ${s[1]}`).join('\n')
-        : `$> player id ${username}  # then copy/paste ID into "User ID" above to see item commands`
-      items_ += `\n\n`
+      if (userid) {
+        items.forEach(s => {
+          const obj = itemsObj[s[0]] || itemsObjArchive[s[0]];
+          const repeat = obj.single ? s[1] : 1;
+          _.times(repeat, () => items_ += `trade post ${userid} ${s[0]} ${obj.single ? 1 : s[1]}\n`);
+        });
+      } else {
+        items_ = `player id ${username}`;
+      }
+      items_ += `\n\n`;
     }
 
     return <div>
@@ -77,7 +97,7 @@ class LostForm extends CommonForm {
   }
 
   renderForm = () => {
-    const { username, server, skills, items, notes, userid, status, submitting } = this.state
+    const { username, server, skills, items, notes, status, userid, submitting } = this.state
     return (
       <Form onSubmit={this.submit}>
         <FormGroup>
@@ -89,7 +109,7 @@ class LostForm extends CommonForm {
             onChange={this.changeInput('username')}
             value={username}
           />
-          <small>Your ATT username, not your Discord username (they're often different)</small>
+          <small>Your ATT username, not your Discord username (they're usually different)</small>
         </FormGroup>
 
         <FormGroup>
@@ -152,12 +172,13 @@ class LostForm extends CommonForm {
                   value={arr[0]}
                   onChange={this.changeInput('items', [i, 0])}
                 >
-                  {itemsArr.map(el => <option value={el[0]}>{el[1]}</option>)}
+                  {itemsArr.map(el => <option value={el[0]}>{el[1].name}</option>)}
                 </Input>
               </Col>
               <Col sm={4}>
                 <Input
                   type="number"
+                  min="1"
                   placeholder="Amount"
                   value={arr[1]}
                   onChange={this.changeInput('items', [i, 1])}
@@ -174,12 +195,13 @@ class LostForm extends CommonForm {
         <FormGroup>
           <Label for="notes">Notes</Label>
           <Input
+            required
             type="textarea"
             name="text"
             value={notes}
             onChange={this.changeInput('notes')}
           />
-          <small>Anything you want to add? Unusual behavior?</small>
+          <small>Please describe what happened in as much detail as possible</small>
         </FormGroup>
 
         {this.editing && (
@@ -204,7 +226,6 @@ class LostForm extends CommonForm {
                 onChange={this.changeInput('status')}
               >
                 <option value="pending">Pending</option>
-                <option value="wip">In Progress</option>
                 <option value="complete">Complete</option>
                 <option value="rejected">Rejected</option>
               </Input>
