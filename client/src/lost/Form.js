@@ -120,7 +120,8 @@ class LostForm extends CommonForm {
             onChange={this.changeInput('server')}
             value={server}
           >
-            <option value='us'>US</option>
+            <option value='us'>US1</option>
+            <option value='us2'>US2</option>
             <option value='eu'>EU</option>
             <option value='aus'>AUS</option>
             <option value='pvp'>PvP</option>

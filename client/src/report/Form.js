@@ -15,7 +15,7 @@ class ReportForm extends CommonForm {
   }
 
   alerts = {
-    editing: <p>Form submitted. Copy this page's URL and private-message it to @kazun#0001 (aka Sol) in Discord. When he has time, he'll investigate and respond to you.</p>,
+    editing: <p>Form submitted. Copy this page's URL and private-message it to @kazun#0001 (aka Sol) in Discord. When he has time, he'll investigate.</p>,
     creating: <div>
       <p>Did someone PK you off PvP server? Did someone steal your stuff? Report it here.</p>
       <p>No need to login via Discord above.</p>
