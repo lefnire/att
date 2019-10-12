@@ -19,7 +19,7 @@ class LostForm extends CommonForm {
   }
 
   alerts = {
-    editing: <p>Form submitted. Copy this page's URL and private-message it to @kazun#0001 (aka Sol) in Discord. When he has time, he'll approve the form and send the items to your in-game mailbox (near Townhall).</p>,
+    editing: <p>Form submitted. When a mod has time, they'll approve the form and send the items to your in-game mailbox (near Townhall).</p>,
     creating: <ul>
       <li>No need to login via Discord</li>
       <li>We only refund items due to server crashes/glitches. Not theft, deaths, etc.</li>
