@@ -3,8 +3,9 @@ from flask import request, jsonify, session, redirect
 from app import app, db
 from models import LostForm, User, Report
 
-URL = {'server': 'http://35.211.255.66:5000', 'client': 'http://lost.ocdevel.com'}
-# URL = {'server': 'http://localhost:5000', 'client': 'http://localhost:3000'}
+URL = {'server': 'http://ocdevel.selfip.com:5003', 'client': 'http://lost.ocdevel.com'}
+# URL = {'server': 'http://localhost:5003', 'client': 'http://localhost:3003'}
+
 
 """
 Main Routes

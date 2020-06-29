@@ -3,13 +3,12 @@ services:
   server:
     build: server
     container_name: lost-server
-    entrypoint: /bin/bash
     stdin_open: true
     tty: true
     ports:
-      - 5000:5000
+      - 5003:5000
     volumes:
-      - ./server/:/server
+      - ./server/:/app
   client:
     build: client
     container_name: lost-client
@@ -17,6 +16,6 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - 3000:3000
+      - 3003:3000
     volumes:
-      - ./client:/client
+      - ./client:/app

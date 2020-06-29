@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
-// const SERVER_URL = 'http://localhost:5000'
-const SERVER_URL = 'http://35.211.255.66:5000'
+// const SERVER_URL = 'http://localhost:5003'
+const SERVER_URL = 'http://ocdevel.selfip.com:5003'
 
 const fetchDefaults = () => {
   const headers = {

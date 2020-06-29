@@ -1,9 +1,26 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.6
+FROM tiangolo/uwsgi-nginx-flask:python3.7
+RUN apt-get update -y
+RUN pip install \
+  appdirs \
+  click \
+  Flask \
+  Flask-Script \
+  Flask-SQLAlchemy \
+  itsdangerous \
+  MarkupSafe \
+  packaging \
+  psycopg2 \
+  pyparsing \
+  python-editor \
+  six \
+  SQLAlchemy \
+  Werkzeug \
+  requests-oauthlib \
+  flask-cors \
+  Flask-JWT
 
-COPY . /server
-WORKDIR /server
+COPY . /app
+WORKDIR /app
 
-RUN apt-get update
-RUN pip install -r ./requirements.txt --no-cache-dir
-
-ENTRYPOINT ./run.sh
+ENV FLASK_APP=server.py
+ENTRYPOINT  flask run -h 0.0.0.0

@@ -1,8 +1,5 @@
-FROM node:11
-
-COPY . /client
-WORKDIR /client
-
-RUN apt-get update
+FROM node
+COPY . /app
+WORKDIR /app
 RUN yarn install
 ENTRYPOINT yarn start
