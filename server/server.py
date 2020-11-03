@@ -26,6 +26,11 @@ def me_route():
     return jsonify(user.serialize4me() if user else {})
 
 
+@app.route('/health', methods=['GET'])
+def me_route():
+    return jsonify({'ok': True})
+
+
 @app.route('/case/<model>', methods=['GET', 'POST'])
 def case_list(model):
     Model = LostForm if model == 'lost' else Report
