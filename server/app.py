@@ -2,12 +2,11 @@ import os, pdb, json
 from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from dynaconf import Dynaconf
 
-with open('config.json') as f:
-    config_json = json.load(f)
-for k, v in config_json.items():
-    if not os.environ.get(k):
-        os.environ[k] = v
+settings = Dynaconf(
+    settings_files=['config.json'],
+)
 
 app = Flask(__name__)
 CORS(app)
@@ -21,7 +20,7 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 }
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/%s' % (
   # ARGS.dbuser, ARGS.dbpass, ARGS.dbhost, ARGS.dbname
-  os.environ['DBUSER'], os.environ['DBPASS'], os.environ['DBHOST'], os.environ['DBNAME']
+  settings.DBUSER, settings.DBPASS, settings.DBHOST, settings.DBNAME
 )
 
 # initialize the database connection

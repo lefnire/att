@@ -6,7 +6,7 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - 5003:5000
+      - 5003:80
     volumes:
       - ./server/:/app
   client:

@@ -17,10 +17,11 @@ RUN pip install \
   Werkzeug \
   requests-oauthlib \
   flask-cors \
-  Flask-JWT
+  Flask-JWT \
+  dynaconf
 
 COPY . /app
 WORKDIR /app
 
 ENV FLASK_APP=server.py
-ENTRYPOINT  flask run -h 0.0.0.0
+ENTRYPOINT  flask run -h 0.0.0.0 --port=80

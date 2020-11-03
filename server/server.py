@@ -1,6 +1,9 @@
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 import os, pdb, jwt
 from flask import request, jsonify, session, redirect
-from app import app, db
+from app import app, db, settings
 from models import LostForm, User, Report
 
 URL = {'server': 'http://ocdevel.selfip.com:5003', 'client': 'http://lost.ocdevel.com'}
@@ -27,7 +30,7 @@ def me_route():
 
 
 @app.route('/health', methods=['GET'])
-def me_route():
+def health_check():
     return jsonify({'ok': True})
 
 
@@ -80,16 +83,16 @@ here gets tricky. See
 
 from requests_oauthlib import OAuth2Session
 
-OAUTH2_CLIENT_ID = os.environ['DISCORD_ID']
-OAUTH2_CLIENT_SECRET = os.environ['DISCORD_SECRET']
+OAUTH2_CLIENT_ID = settings.DISCORD_ID
+OAUTH2_CLIENT_SECRET = settings.DISCORD_SECRET
 OAUTH2_REDIRECT_URI = URL['server'] + '/discord/callback'
 
-API_BASE_URL = os.environ.get('API_BASE_URL', 'https://discordapp.com/api')
+API_BASE_URL = settings.get('API_BASE_URL', 'https://discordapp.com/api')
 AUTHORIZATION_BASE_URL = API_BASE_URL + '/oauth2/authorize'
 TOKEN_URL = API_BASE_URL + '/oauth2/token'
 
 if 'http://' in OAUTH2_REDIRECT_URI:
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = 'true'
+    settings['OAUTHLIB_INSECURE_TRANSPORT'] = 'true'
 
 
 def token_updater(token):
